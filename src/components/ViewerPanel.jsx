@@ -1,13 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getAttendanceRecords } from '../services/db';
 import { studentsData } from '../data/studentsData';
 import { generateDailyPDF } from '../utils/pdfGenerator';
-import { Download } from 'lucide-react';
+import { generateDailyExcel } from '../utils/excelGenerator';
+import { Download, ChevronDown } from 'lucide-react';
 
 export default function ViewerPanel() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [presentStudents, setPresentStudents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -19,12 +32,22 @@ export default function ViewerPanel() {
     loadData();
   }, [date]);
 
-  const handleDownload = () => {
+  const handleDownloadPDF = () => {
     if (!presentStudents || presentStudents.length === 0) {
       alert("No attendance has been marked for this date yet!");
       return;
     }
     generateDailyPDF(date, presentStudents, studentsData);
+    setShowDropdown(false);
+  };
+
+  const handleDownloadExcel = () => {
+    if (!presentStudents || presentStudents.length === 0) {
+      alert("No attendance has been marked for this date yet!");
+      return;
+    }
+    generateDailyExcel(date, presentStudents, studentsData);
+    setShowDropdown(false);
   };
 
   return (
@@ -39,10 +62,39 @@ export default function ViewerPanel() {
             onChange={(e) => setDate(e.target.value)} 
           />
         </div>
-        <button className="btn btn-primary" onClick={handleDownload}>
-          <Download size={18} />
-          Download Daily PDF
-        </button>
+        <div className="dropdown-container" ref={dropdownRef} style={{ position: 'relative' }}>
+          <button className="btn btn-primary" onClick={() => setShowDropdown(!showDropdown)}>
+            <Download size={18} />
+            Export Daily Report
+            <ChevronDown size={18} />
+          </button>
+          {showDropdown && (
+            <div className="dropdown-menu" style={{ 
+              position: 'absolute', top: '100%', right: 0, 
+              background: 'white', border: '1px solid #ccc', 
+              borderRadius: '8px', zIndex: 10, marginTop: '0.5rem', 
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: '150px',
+              overflow: 'hidden'
+            }}>
+              <button 
+                style={{ display: 'block', width: '100%', padding: '0.75rem 1rem', border: 'none', background: 'transparent', textAlign: 'left', cursor: 'pointer', fontSize: '0.9rem', color: '#333' }} 
+                onClick={handleDownloadPDF}
+                onMouseOver={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                Export as PDF
+              </button>
+              <button 
+                style={{ display: 'block', width: '100%', padding: '0.75rem 1rem', border: 'none', background: 'transparent', textAlign: 'left', cursor: 'pointer', fontSize: '0.9rem', color: '#333' }} 
+                onClick={handleDownloadExcel}
+                onMouseOver={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                Export as Excel
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="table-container">

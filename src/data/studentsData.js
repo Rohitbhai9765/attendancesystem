@@ -25,6 +25,5 @@ export const studentsData = [
   { srNo: 24, mis: "612301086", name: "DEVEN SHRIKANT SOMANI" },
   { srNo: 25, mis: "612301089", name: "SAMRUDDHI MAHESH TAGADE" },
   { srNo: 26, mis: "612301091", name: "RISHI DINESH THOMBARE" },
-  { srNo: 27, mis: "642401015", name: "HARIS BIN SAJAD" },
-  { srNo: 28, mis: "612301094", name: "BHUMIKA VIJAY YADAV" },
+  { srNo: 27, mis: "642401015", name: "HARIS BIN SAJAD" }
 ];
