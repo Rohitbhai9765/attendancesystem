@@ -8,6 +8,7 @@ import { Download, ChevronDown } from 'lucide-react';
 export default function ViewerPanel() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [presentStudents, setPresentStudents] = useState([]);
+  const [lectureConducted, setLectureConducted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
@@ -26,7 +27,8 @@ export default function ViewerPanel() {
     const loadData = async () => {
       setLoading(true);
       const records = await getAttendanceRecords();
-      setPresentStudents(records[date] || []);
+      setPresentStudents(records[date]?.presentStudents || []);
+      setLectureConducted(records[date]?.lectureConducted ?? false);
       setLoading(false);
     };
     loadData();
@@ -96,6 +98,12 @@ export default function ViewerPanel() {
           )}
         </div>
       </div>
+
+      {!lectureConducted && (
+        <div style={{ padding: '1rem', background: '#ffebee', color: '#c62828', borderRadius: '8px', marginBottom: '1rem', textAlign: 'center', fontWeight: 'bold' }}>
+          Lecture was not conducted on this date.
+        </div>
+      )}
 
       <div className="table-container">
         <table>

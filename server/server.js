@@ -23,10 +23,13 @@ mongoose.connect(MONGO_URI)
 app.get('/api/attendance', async (req, res) => {
   try {
     const records = await Attendance.find();
-    // Transform DB array into the key-value map the frontend expects { "YYYY-MM-DD": ["MIS", "MIS"] }
+    // Transform DB array into the key-value map the frontend expects
     const attendanceMap = {};
     records.forEach(record => {
-      attendanceMap[record.date] = record.presentStudents;
+      attendanceMap[record.date] = {
+        presentStudents: record.presentStudents,
+        lectureConducted: record.lectureConducted ?? false
+      };
     });
     res.json(attendanceMap);
   } catch (error) {
@@ -38,12 +41,12 @@ app.get('/api/attendance', async (req, res) => {
 // 2. Save or update attendance for a specific date
 app.post('/api/attendance', async (req, res) => {
   try {
-    const { date, presentStudents } = req.body;
+    const { date, presentStudents, lectureConducted = false } = req.body;
     
     // Upsert: Create if it doesn't exist, update if it does
     await Attendance.findOneAndUpdate(
       { date },
-      { presentStudents },
+      { presentStudents, lectureConducted },
       { upsert: true, new: true }
     );
     

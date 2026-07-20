@@ -8,7 +8,11 @@ const attendanceSchema = new mongoose.Schema({
   },
   presentStudents: [{
     type: String // We will store the MIS strings here
-  }]
+  }],
+  lectureConducted: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Attendance', attendanceSchema);

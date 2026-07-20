@@ -18,19 +18,19 @@ export const getAttendanceRecords = async () => {
 };
 
 // Save attendance for a specific date
-export const saveAttendance = async (dateStr, presentStudents) => {
+export const saveAttendance = async (dateStr, presentStudents, lectureConducted = false) => {
   try {
     await fetch(`${API_URL}/api/attendance`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ date: dateStr, presentStudents }),
+      body: JSON.stringify({ date: dateStr, presentStudents, lectureConducted }),
     });
     
     // Update local cache
     if (cachedRecords) {
-      cachedRecords[dateStr] = presentStudents;
+      cachedRecords[dateStr] = { presentStudents, lectureConducted };
     }
   } catch (error) {
     console.error("Error saving attendance:", error);
@@ -41,11 +41,15 @@ export const saveAttendance = async (dateStr, presentStudents) => {
 export const getStudentStatistics = async () => {
   const records = await getAttendanceRecords();
   const dates = Object.keys(records);
-  const totalClasses = dates.length;
+  
+  // Only count dates where lecture was actually conducted
+  const conductedDates = dates.filter(date => records[date]?.lectureConducted === true);
+  const totalClasses = conductedDates.length;
 
   return studentsData.map(student => {
-    const classesAttended = dates.reduce((count, date) => {
-      return records[date].includes(student.mis) ? count + 1 : count;
+    const classesAttended = conductedDates.reduce((count, date) => {
+      const isPresent = records[date]?.presentStudents?.includes(student.mis);
+      return isPresent ? count + 1 : count;
     }, 0);
 
     const percentage = totalClasses === 0 ? 0 : Math.round((classesAttended / totalClasses) * 100);
