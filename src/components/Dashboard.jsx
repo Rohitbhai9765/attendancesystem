@@ -3,7 +3,7 @@ import AttendanceTable from './AttendanceTable';
 import StatisticsPanel from './StatisticsPanel';
 import ViewerPanel from './ViewerPanel';
 import LoginModal from './LoginModal';
-
+import logo from '../assets/logo.png';
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('viewer'); // 'viewer', 'stats', 'mark'
   const [isAdmin, setIsAdmin] = useState(false);
@@ -23,7 +23,8 @@ export default function Dashboard() {
   if (showLogin) {
     return (
       <div className="app-container">
-        <header className="header">
+        <header className="header" style={{ position: 'relative' }}>
+          <img src={logo} alt="COEP Civil 27" className="portal-logo" />
           <h1>Attendance System</h1>
           <p>Prestressed Concrete Structures</p>
         </header>
@@ -38,6 +39,7 @@ export default function Dashboard() {
   return (
     <div className="app-container">
       <header className="header" style={{ position: 'relative' }}>
+        <img src={logo} alt="COEP Civil 27" className="portal-logo" />
         <div className="admin-btn-container">
           {isAdmin ? (
             <button className="btn btn-outline" onClick={handleLogout}>Log Out</button>

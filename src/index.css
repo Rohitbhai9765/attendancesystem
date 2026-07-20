@@ -182,17 +182,40 @@ body {
 }
 
 .admin-btn-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.admin-btn-container .btn {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  width: auto;
 }
 
 @media (min-width: 768px) {
-  .admin-btn-container {
+  .admin-btn-container .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+.portal-logo {
+  display: block;
+  margin: 0 auto 1rem auto;
+  height: 60px;
+  width: auto;
+}
+
+@media (min-width: 768px) {
+  .portal-logo {
     position: absolute;
-    top: 0;
-    right: 0;
-    margin-bottom: 0;
+    top: 75%;
+    left: 15%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    height: 180px;
   }
 }
 
